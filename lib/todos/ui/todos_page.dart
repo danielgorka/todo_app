@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/app/injection.dart';
 import 'package:todo_app/core/widgets/error_view.dart';
-import 'package:todo_app/todos/bloc/todos_bloc.dart';
+import 'package:todo_app/todos/cubit/todos_cubit.dart';
 import 'package:todo_app/todos/ui/todo_item.dart';
 
 class TodosPage extends StatelessWidget {
@@ -11,7 +11,7 @@ class TodosPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt<TodosBloc>()..add(const TodosEvent.init()),
+      create: (context) => getIt<TodosCubit>()..init(),
       child: const Scaffold(
         body: _TodosView(),
       ),
@@ -24,7 +24,7 @@ class _TodosView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<TodosBloc>().state;
+    final state = context.watch<TodosCubit>().state;
 
     if (state.loading) {
       return const Center(

@@ -12,7 +12,7 @@ import 'package:dio/dio.dart' as _i361;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:todo_app/app/injection.dart' as _i117;
-import 'package:todo_app/todos/bloc/todos_bloc.dart' as _i830;
+import 'package:todo_app/todos/cubit/todos_cubit.dart' as _i501;
 import 'package:todo_app/todos/data/todos_data_source.dart' as _i858;
 import 'package:todo_app/todos/data/todos_repository.dart' as _i808;
 import 'package:todo_app/todos/domain/i_todos_repository.dart' as _i99;
@@ -34,8 +34,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i858.TodosDataSource(dio: gh<_i361.Dio>()));
     gh.lazySingleton<_i99.ITodosRepository>(() =>
         _i808.TodosRepository(todosDataSource: gh<_i858.TodosDataSource>()));
-    gh.factory<_i830.TodosBloc>(
-        () => _i830.TodosBloc(todosRepository: gh<_i99.ITodosRepository>()));
+    gh.factory<_i501.TodosCubit>(
+        () => _i501.TodosCubit(todosRepository: gh<_i99.ITodosRepository>()));
     return this;
   }
 }

@@ -5,7 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_finders/patrol_finders.dart';
 import 'package:todo_app/core/widgets/error_view.dart';
-import 'package:todo_app/todos/bloc/todos_bloc.dart';
+import 'package:todo_app/todos/cubit/todos_cubit.dart';
 import 'package:todo_app/todos/domain/models/todo.dart';
 import 'package:todo_app/todos/domain/values/todo_completed.dart';
 import 'package:todo_app/todos/domain/values/todo_id.dart';
@@ -15,15 +15,16 @@ import 'package:todo_app/todos/ui/todos_page.dart';
 
 import '../../utils/patrol_tester_x.dart';
 
-class MockTodosBloc extends MockBloc<TodosEvent, TodosState>
-    implements TodosBloc {}
+class MockTodosCubit extends MockCubit<TodosState> implements TodosCubit {}
 
 void main() {
-  late TodosBloc mockTodosBloc;
+  late TodosCubit mockTodosCubit;
 
   setUp(() {
-    mockTodosBloc = MockTodosBloc();
-    GetIt.instance.registerSingleton(mockTodosBloc);
+    mockTodosCubit = MockTodosCubit();
+    GetIt.instance.registerSingleton(mockTodosCubit);
+
+    when(mockTodosCubit.init).thenAnswer((_) async {});
   });
 
   tearDown(() {
@@ -37,7 +38,7 @@ void main() {
         'should show loading indicator when state is loading',
         ($) async {
           // arrange
-          when(() => mockTodosBloc.state).thenReturn(
+          when(() => mockTodosCubit.state).thenReturn(
             const TodosState(
               loading: true,
               error: false,
@@ -56,7 +57,7 @@ void main() {
         'should show ErrorView when state has error',
         ($) async {
           // arrange
-          when(() => mockTodosBloc.state).thenReturn(
+          when(() => mockTodosCubit.state).thenReturn(
             const TodosState(
               loading: false,
               error: true,
@@ -87,7 +88,7 @@ void main() {
               completed: TodoCompleted.yes,
             ),
           ];
-          when(() => mockTodosBloc.state).thenReturn(
+          when(() => mockTodosCubit.state).thenReturn(
             TodosState(
               loading: false,
               error: false,

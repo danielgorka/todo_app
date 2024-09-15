@@ -5,22 +5,18 @@ import 'package:todo_app/todos/domain/i_todos_repository.dart';
 import 'package:todo_app/todos/domain/models/todo.dart';
 import 'package:todo_app/todos/domain/values/todo_completed.dart';
 
-part 'todos_bloc.freezed.dart';
-part 'todos_event.dart';
+part 'todos_cubit.freezed.dart';
 part 'todos_state.dart';
 
 @injectable
-class TodosBloc extends Bloc<TodosEvent, TodosState> {
-  TodosBloc({
+class TodosCubit extends Cubit<TodosState> {
+  TodosCubit({
     required this.todosRepository,
-  }) : super(TodosState.initial()) {
-    on<_Init>(_onInit);
-    on<_Toggle>(_onToggle);
-  }
+  }) : super(TodosState.initial());
 
   final ITodosRepository todosRepository;
 
-  Future<void> _onInit(_Init event, Emitter<TodosState> emit) async {
+  Future<void> init() async {
     emit(TodosState.initial());
 
     final either = await todosRepository.getTodos();
@@ -37,14 +33,13 @@ class TodosBloc extends Bloc<TodosEvent, TodosState> {
     );
   }
 
-  Future<void> _onToggle(_Toggle event, Emitter<TodosState> emit) async {
-    final updatedTodo = event.todo.copyWith(
-      completed: TodoCompleted(!event.todo.completed.value),
+  Future<void> toggle(Todo todo) async {
+    final updatedTodo = todo.copyWith(
+      completed: TodoCompleted(!todo.completed.value),
     );
     final todos = state.todos!;
-    final updatedTodos = todos
-        .map((todo) => todo.id == event.todo.id ? updatedTodo : todo)
-        .toList();
+    final updatedTodos =
+        todos.map((todo) => todo.id == todo.id ? updatedTodo : todo).toList();
 
     // Update the state immediately
     emit(

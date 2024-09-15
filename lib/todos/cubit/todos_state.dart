@@ -1,4 +1,4 @@
-part of 'todos_bloc.dart';
+part of 'todos_cubit.dart';
 
 @freezed
 class TodosState with _$TodosState {

@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:todo_app/core/domain/app_failure.dart';
 import 'package:todo_app/core/domain/either.dart';
-import 'package:todo_app/todos/bloc/todos_bloc.dart';
+import 'package:todo_app/todos/cubit/todos_cubit.dart';
 import 'package:todo_app/todos/domain/i_todos_repository.dart';
 import 'package:todo_app/todos/domain/models/todo.dart';
 import 'package:todo_app/todos/domain/values/todo_completed.dart';
@@ -14,15 +14,15 @@ class MockTodosRepository extends Mock implements ITodosRepository {}
 
 void main() {
   late MockTodosRepository mockTodosRepository;
-  late TodosBloc todosBloc;
+  late TodosCubit todosCubit;
 
   setUp(() {
     mockTodosRepository = MockTodosRepository();
-    todosBloc = TodosBloc(todosRepository: mockTodosRepository);
+    todosCubit = TodosCubit(todosRepository: mockTodosRepository);
   });
 
   tearDown(() {
-    todosBloc.close();
+    todosCubit.close();
   });
 
   final todo = Todo(
@@ -37,21 +37,21 @@ void main() {
   final todos = [todo];
 
   group(
-    'TodosBloc',
+    'TodosCubit',
     () {
       group(
         'init',
         () {
-          blocTest<TodosBloc, TodosState>(
+          blocTest<TodosCubit, TodosState>(
             'should emit [loading, loaded] when TodosRepository.getTodos '
             'is successful',
             build: () {
               when(() => mockTodosRepository.getTodos()).thenAnswer(
                 (_) async => Right(todos),
               );
-              return todosBloc;
+              return todosCubit;
             },
-            act: (bloc) => bloc.add(const TodosEvent.init()),
+            act: (cubit) => cubit.init(),
             expect: () => [
               const TodosState(loading: true, error: false),
               TodosState(
@@ -62,15 +62,15 @@ void main() {
             ],
           );
 
-          blocTest<TodosBloc, TodosState>(
+          blocTest<TodosCubit, TodosState>(
             'should emit [loading, error] when TodosRepository.getTodos fails',
             build: () {
               when(() => mockTodosRepository.getTodos()).thenAnswer(
                 (_) async => const Left(AppFailure.serverError()),
               );
-              return todosBloc;
+              return todosCubit;
             },
-            act: (bloc) => bloc.add(const TodosEvent.init()),
+            act: (cubit) => cubit.init(),
             expect: () => [
               const TodosState(loading: true, error: false),
               const TodosState(loading: false, error: true),
@@ -82,20 +82,20 @@ void main() {
       group(
         'toggle',
         () {
-          blocTest<TodosBloc, TodosState>(
+          blocTest<TodosCubit, TodosState>(
             'should emit updated state when TodosRepository.update '
             'is successful',
             build: () {
               when(() => mockTodosRepository.update(toggledTodo))
                   .thenAnswer((_) async => Right(toggledTodo));
-              return todosBloc;
+              return todosCubit;
             },
             seed: () => TodosState(
               loading: false,
               error: false,
               todos: todos,
             ),
-            act: (bloc) => bloc.add(TodosEvent.toggle(todo)),
+            act: (cubit) => cubit.toggle(todo),
             expect: () => [
               TodosState(
                 loading: false,
@@ -105,21 +105,21 @@ void main() {
             ],
           );
 
-          blocTest<TodosBloc, TodosState>(
+          blocTest<TodosCubit, TodosState>(
             'should emit updated state and error when TodosRepository.update '
             'fails',
             build: () {
               when(() => mockTodosRepository.update(toggledTodo)).thenAnswer(
                 (_) async => const Left(AppFailure.serverError()),
               );
-              return todosBloc;
+              return todosCubit;
             },
             seed: () => TodosState(
               loading: false,
               error: false,
               todos: todos,
             ),
-            act: (bloc) => bloc.add(TodosEvent.toggle(todo)),
+            act: (cubit) => cubit.toggle(todo),
             expect: () => [
               TodosState(
                 loading: false,

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_finders/patrol_finders.dart';
-import 'package:todo_app/todos/bloc/todos_bloc.dart';
+import 'package:todo_app/todos/cubit/todos_cubit.dart';
 import 'package:todo_app/todos/domain/models/todo.dart';
 import 'package:todo_app/todos/domain/values/todo_completed.dart';
 import 'package:todo_app/todos/domain/values/todo_id.dart';
@@ -41,19 +41,19 @@ void main() {
         'should add TodosEvent.toggle when checkbox is tapped',
         ($) async {
           // arrange
-          final bloc = MockTodosBloc();
-          when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
-
           final todo = Todo(
             id: const TodoId(1),
             name: TodoName('Test'),
             completed: TodoCompleted.yes,
           );
 
+          final cubit = MockTodosCubit();
+          when(() => cubit.toggle(todo)).thenAnswer((_) async {});
+
           // act
           await $.pumpApp(
-            BlocProvider<TodosBloc>.value(
-              value: bloc,
+            BlocProvider<TodosCubit>.value(
+              value: cubit,
               child: TodoItem(
                 todo: todo,
               ),
@@ -63,7 +63,7 @@ void main() {
           await $(Checkbox).tap();
 
           // assert
-          verify(() => bloc.add(TodosEvent.toggle(todo)));
+          verify(() => cubit.toggle(todo));
         },
       );
     },
