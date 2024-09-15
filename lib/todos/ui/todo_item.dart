@@ -19,7 +19,7 @@ class TodoItem extends StatelessWidget {
       leading: Checkbox(
         value: todo.completed.value,
         onChanged: (_) =>
-              context.read<TodosBloc>().add(TodosEvent.toggle(todo)),
+            context.read<TodosBloc>().add(TodosEvent.toggle(todo)),
       ),
     );
   }
