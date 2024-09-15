@@ -13,4 +13,4 @@ jobs:
       flutter_version: '3.22.3'
       test_recursion: true
       coverage_excludes: '*.g.dart *.gr.dart *.config.dart *.freezed.dart'
-      min_coverage: 50
+      min_coverage: 90
